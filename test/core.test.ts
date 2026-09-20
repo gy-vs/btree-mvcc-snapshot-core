@@ -1,0 +1,1 @@
+import {expect,it} from 'vitest';import {BTree} from '../src/index.js';it('stores ordered values',()=>{const x=new BTree<number>();x.insert('b',2);x.insert('a',1);expect(x.range('a','z').map(v=>v.key)).toEqual(['a','b'])});
