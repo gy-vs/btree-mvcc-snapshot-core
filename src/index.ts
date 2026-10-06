@@ -1,1 +1,40 @@
-export class BTree<V>{#entries:{key:string;value:V}[]=[];insert(key:string,value:V){const at=this.#entries.findIndex(item=>item.key>=key);this.#entries.splice(at<0?this.#entries.length:at,0,{key,value})}get(key:string){return this.#entries.find(item=>item.key===key)?.value}delete(key:string){const at=this.#entries.findIndex(item=>item.key===key);if(at>=0)this.#entries.splice(at,1)}range(start:string,end:string){return this.#entries.filter(item=>item.key>=start&&item.key<=end).map(item=>({...item}))}size(){return this.#entries.length}}
+/**
+ * btree-mvcc-snapshot-core
+ *
+ * Fixed-capacity, paged B-tree with copy-on-write MVCC, snapshot reads and
+ * refcounted page recycling. Zero runtime dependencies.
+ *
+ * Quick start (convenience auto-commit API):
+ *
+ *   const tree = new BTree<number>();
+ *   tree.insert('a', 1);
+ *   tree.get('a');
+ *   tree.range('a', 'z');
+ *   tree.delete('a');
+ *   tree.size();
+ *
+ * Batched writes and snapshot reads:
+ *
+ *   const snap = tree.snapshot();
+ *   try {
+ *     for await (const { key, value } of snap.range('a', 'z')) { ... }
+ *   } finally { snap.close(); }
+ *
+ *   const txn = tree.beginTransaction();
+ *   txn.insert('k', 1);
+ *   await txn.commit();       // whole batch visible at once
+ *   // txn.rollback() discards everything
+ */
+
+export {
+  BTree,
+  Snapshot,
+  WriteTransaction,
+  PageStore,
+  WriteConflictError,
+  SnapshotClosedError,
+  SnapshotExpiredError,
+  TransactionClosedError,
+} from './btree.js';
+
+export type { BTreeOptions, SnapshotInfo, KV } from './btree.js';
